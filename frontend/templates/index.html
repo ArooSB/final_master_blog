@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Blog Posts</h1>
+
+        <!-- API Base URL -->
+        <div class="input-field">
+            <input type="text" id="api-base-url" placeholder="Enter API Base URL" value="http://127.0.0.1:5002/api/v1">
+            <button onclick="loadPosts()">Load Posts</button>
+        </div>
+
+        <!-- Add Post -->
+        <div class="input-field">
+            <input type="text" id="post-title" placeholder="Enter Post Title">
+            <input type="text" id="post-content" placeholder="Enter Post Content">
+            <button onclick="addPost()">Add Post</button>
+        </div>
+
+        <!-- Update Post -->
+        <div class="input-field">
+            <input type="number" id="update-post-id" placeholder="Post ID to Update">
+            <input type="text" id="update-title" placeholder="New Post Title (optional)">
+            <input type="text" id="update-content" placeholder="New Post Content (optional)">
+            <button onclick="updatePost()">Update Post</button>
+        </div>
+
+        <!-- Search Posts -->
+        <div class="input-field">
+            <input type="text" id="search-title" placeholder="Search by Title">
+            <input type="text" id="search-content" placeholder="Search by Content">
+            <button onclick="searchPosts()">Search</button>
+        </div>
+
+        <!-- Sorting Options -->
+        <div class="input-field">
+            <input type="text" id="sort-field" placeholder="Sort by (title/content)">
+            <input type="text" id="sort-direction" placeholder="Sort direction (asc/desc)">
+            <button onclick="loadPosts()">Load Posts with Sorting</button>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="input-field">
+            <input type="number" id="page-number" placeholder="Page Number" value="1">
+            <input type="number" id="posts-per-page" placeholder="Posts per Page" value="10">
+        </div>
+
+        <!-- Post Container -->
+        <div id="post-container">
+            <!-- Blog posts will be inserted here by JavaScript -->
+        </div>
+
+        <!-- User Registration -->
+        <div class="input-field">
+            <h2>Register</h2>
+            <input type="text" id="register-username" placeholder="Username">
+            <input type="password" id="register-password" placeholder="Password">
+            <button onclick="register()">Register</button>
+        </div>
+
+        <!-- User Login -->
+        <div class="input-field">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+
+        <!-- User Logout -->
+        <div class="input-field">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script src="static/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #BBD0FF; /* Light Blue-Purple Background */
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FFFFFF; /* White for the main content area */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #FFD6FF; /* Light Pink-Purple for main heading */
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #C8B6FF; /* Medium Purple for sub-headings */
+}
+
+.input-field {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between inputs and buttons */
+}
+
+.input-field input, .input-field button {
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #E7C6FF; /* Soft Purple Border */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.input-field input {
+    background-color: #B8C0FF; /* Light Purple Background for Inputs */
+}
+
+.input-field button {
+    background-color: #C8B6FF; /* Medium Purple Button Background */
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    height: 50px; /* Consistent height for buttons */
+    display: flex;
+    align-items: center; /* Vertically center text */
+    justify-content: center; /* Center text horizontally */
+}
+
+.input-field button:hover {
+    background-color: #E7C6FF; /* Hover Effect with a Softer Purple */
+}
+
+#post-container {
+    margin-top: 20px;
+}
+
+.post {
+    padding: 15px;
+    border-bottom: 2px dashed #E7C6FF; /* Dashed Border with Soft Purple */
+    background-color: #FFD6FF; /* Light Pink-Purple Background for Posts */
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+.post h2 {
+    margin: 0 0 10px 0;
+    color: #B8C0FF; /* Medium Purple for Post Titles */
+}
+
+.post p {
+    margin: 0;
+    color: #333; /* Dark Text Color for Content */
+}
+
+/* Pagination Controls */
+.input-field input[type="number"] {
+    background-color: #E7C6FF; /* Soft Purple Background for Pagination Inputs */
+    border: 1px solid #C8B6FF; /* Medium Purple Border */
+}
+
+.input-field input[type="number"]:focus {
+    border-color: #B8C0FF; /* Focused Border with Light Purple */
+    outline: none;
+}
+
+/* Uniform Bar Sizes */
+.bar {
+    height: 50px; /* Fixed height for bars */
+    background-color: #E7C6FF; /* Soft Purple Background */
+    display: flex;
+    align-items: center; /* Vertically center content */
+    padding: 0 20px; /* Padding inside the bar */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/* Specific Bar Types */
+.nav-bar {
+    background-color: #C8B6FF; /* Medium Purple Background */
+}
+
+.progress-bar {
+    height: 50px; /* Same height for consistency */
+    background-color: #FFD6FF; /* Light Pink-Purple Background */
+}
+
+.footer-bar {
+    background-color: #BBD0FF; /* Light Blue-Purple Background */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .input-field {
+        gap: 8px; /* Adjust space between inputs and buttons on smaller screens */
+    }
+
+    .bar {
+        height: 40px; /* Adjust height for smaller screens if needed */
+    }
+}
