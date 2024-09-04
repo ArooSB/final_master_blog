@@ -6,7 +6,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this to a strong secret key
+app.secret_key = 'your_secret_key'  # Change this to a secure key in production
 CORS(app)
 
 # Initialize Flask-Login and Flask-Bcrypt
@@ -110,6 +110,8 @@ def register():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    if not username or not password:
+        return jsonify({"message": "Username and password required."}), 400
     if username in users:
         return jsonify({"message": "User already exists."}), 400
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -123,15 +125,13 @@ def login():
         username = data.get('username')
         password = data.get('password')
         user_password = users.get(username)
-        if not user_password or not bcrypt.check_password_hash(user_password,
-                                                               password):
+        if not user_password or not bcrypt.check_password_hash(user_password, password):
             return jsonify({"message": "Invalid credentials."}), 401
         user = User(username)
-        print(user)
         login_user(user)
+        return jsonify({"message": "Login successful."})
     except Exception as e:
-        print(e)
-    return jsonify({"message": "Login successful."})
+        return jsonify({"message": str(e)}), 500
 
 @app.route('/api/v1/users/logout', methods=['POST'])
 @login_required
@@ -140,4 +140,4 @@ def logout():
     return jsonify({"message": "Logout successful."})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5002, debug=True)
+    app.run(host="0.0.0.0", port=5003, debug=True)

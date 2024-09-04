@@ -1,234 +1,157 @@
-// Function to load posts with sorting and pagination options
-async function loadPosts() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
+// Fetch the API base URL from the input field
+const apiBaseUrlInput = document.getElementById('api-base-url');
+
+// Function to load posts from the server
+function loadPosts() {
+    const apiBaseUrl = apiBaseUrlInput.value;
     const sortField = document.getElementById('sort-field').value;
     const sortDirection = document.getElementById('sort-direction').value;
-    const pageNumber = document.getElementById('page-number').value || 1;
-    const postsPerPage = document.getElementById('posts-per-page').value || 10;
+    const pageNumber = document.getElementById('page-number').value;
+    const postsPerPage = document.getElementById('posts-per-page').value;
 
-    let queryParams = [];
-    if (sortField) queryParams.push(`sort=${encodeURIComponent(sortField)}`);
-    if (sortDirection) queryParams.push(`direction=${encodeURIComponent(sortDirection)}`);
-    if (pageNumber) queryParams.push(`page=${encodeURIComponent(pageNumber)}`);
-    if (postsPerPage) queryParams.push(`per_page=${encodeURIComponent(postsPerPage)}`);
-
-    const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/posts${queryString}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const posts = await response.json();
-        displayPosts(posts);
-    } catch (error) {
-        console.error('Error loading posts:', error);
-    }
+    fetch(`${apiBaseUrl}/posts?sort=${sortField}&direction=${sortDirection}&page=${pageNumber}&per_page=${postsPerPage}`)
+        .then(response => response.json())
+        .then(posts => {
+            const postContainer = document.getElementById('post-container');
+            postContainer.innerHTML = '';
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>`;
+                postContainer.appendChild(postElement);
+            });
+        })
+        .catch(error => console.error('Error loading posts:', error));
 }
 
 // Function to add a new post
-async function addPost() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
+function addPost() {
+    const apiBaseUrl = apiBaseUrlInput.value;
     const title = document.getElementById('post-title').value;
     const content = document.getElementById('post-content').value;
 
-    if (!title || !content) {
-        alert('Please enter both title and content.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/posts`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ title, content })
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const newPost = await response.json();
-        alert(`Post added with ID: ${newPost.id}`);
-        loadPosts(); // Reload posts to include the new post
-    } catch (error) {
-        console.error('Error adding post:', error);
-    }
+    fetch(`${apiBaseUrl}/posts`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAuthToken() // Add auth token if needed
+        },
+        body: JSON.stringify({ title, content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Post added:', data);
+        loadPosts();
+    })
+    .catch(error => console.error('Error adding post:', error));
 }
 
-// Function to update a post
-async function updatePost() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
+// Function to update an existing post
+function updatePost() {
+    const apiBaseUrl = apiBaseUrlInput.value;
     const postId = document.getElementById('update-post-id').value;
-    const newTitle = document.getElementById('update-title').value;
-    const newContent = document.getElementById('update-content').value;
+    const title = document.getElementById('update-title').value;
+    const content = document.getElementById('update-content').value;
 
-    if (!postId) {
-        alert('Please enter the Post ID.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/posts/${postId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title: newTitle || undefined,
-                content: newContent || undefined
-            })
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const updatedPost = await response.json();
-        alert(`Post updated: ${JSON.stringify(updatedPost)}`);
-        loadPosts(); // Reload posts to include the updated post
-    } catch (error) {
-        console.error('Error updating post:', error);
-    }
+    fetch(`${apiBaseUrl}/posts/${postId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAuthToken() // Add auth token if needed
+        },
+        body: JSON.stringify({ title, content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Post updated:', data);
+        loadPosts();
+    })
+    .catch(error => console.error('Error updating post:', error));
 }
 
-// Function to delete a post
-async function deletePost(id) {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
-    if (!confirm('Are you sure you want to delete this post?')) {
-        return;
-    }
-    try {
-        const response = await fetch(`${apiBaseUrl}/posts/${id}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        alert(result.message);
-        loadPosts(); // Reload posts to reflect the deletion
-    } catch (error) {
-        console.error('Error deleting post:', error);
-    }
-}
+// Function to search for posts
+function searchPosts() {
+    const apiBaseUrl = apiBaseUrlInput.value;
+    const title = document.getElementById('search-title').value;
+    const content = document.getElementById('search-content').value;
 
-// Function to search posts
-async function searchPosts() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
-    const titleSearch = document.getElementById('search-title').value;
-    const contentSearch = document.getElementById('search-content').value;
-
-    let queryParams = [];
-    if (titleSearch) queryParams.push(`title=${encodeURIComponent(titleSearch)}`);
-    if (contentSearch) queryParams.push(`content=${encodeURIComponent(contentSearch)}`);
-
-    const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/posts/search${queryString}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const posts = await response.json();
-        displayPosts(posts);
-    } catch (error) {
-        console.error('Error searching posts:', error);
-    }
-}
-
-// Function to display posts
-function displayPosts(posts) {
-    const postContainer = document.getElementById('post-container');
-    postContainer.innerHTML = ''; // Clear existing posts
-    if (posts.length === 0) {
-        postContainer.innerHTML = '<p>No posts available.</p>';
-    } else {
-        posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'post';
-            postElement.innerHTML = `
-                <h2>${post.title}</h2>
-                <p>${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>
-            `;
-            postContainer.appendChild(postElement);
-        });
-    }
+    fetch(`${apiBaseUrl}/posts/search?title=${title}&content=${content}`)
+        .then(response => response.json())
+        .then(posts => {
+            const postContainer = document.getElementById('post-container');
+            postContainer.innerHTML = '';
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>`;
+                postContainer.appendChild(postElement);
+            });
+        })
+        .catch(error => console.error('Error searching posts:', error));
 }
 
 // Function to register a new user
-async function register() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
+function register() {
+    const apiBaseUrl = apiBaseUrlInput.value;
     const username = document.getElementById('register-username').value;
+    const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
 
-    if (!username || !password) {
-        alert('Please enter both username and password.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/users/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        alert(result.message);
-    } catch (error) {
-        console.error('Error registering user:', error);
-    }
+    fetch(`${apiBaseUrl}/users/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('User registered:', data);
+    })
+    .catch(error => console.error('Error registering user:', error));
 }
 
-// Function to login a user
-async function login() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
-    const username = document.getElementById('login-username').value;
+// Function to log in a user
+function login() {
+    const apiBaseUrl = apiBaseUrlInput.value;
+    const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    if (!username || !password) {
-        alert('Please enter both username and password.');
-        return;
-    }
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/users/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const result = await response.json();
-        alert(result.message);
-        loadPosts(); // Load posts after login if necessary
-    } catch (error) {
-        console.error('Error logging in:', error);
-    }
+    fetch(`${apiBaseUrl}/users/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('User logged in:', data);
+        // Store auth token or user info if needed
+    })
+    .catch(error => console.error('Error logging in user:', error));
 }
 
-// Function to logout the user
-async function logout() {
-    const apiBaseUrl = document.getElementById('api-base-url').value;
-    try {
-        const response = await fetch(`${apiBaseUrl}/users/logout`, {
-            method: 'POST',
-            credentials: 'include' // Ensure cookies are sent
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+// Function to log out a user
+function logout() {
+    const apiBaseUrl = apiBaseUrlInput.value;
+
+    fetch(`${apiBaseUrl}/users/logout`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + getAuthToken() // Add auth token if needed
         }
-        const result = await response.json();
-        alert(result.message);
-        loadPosts(); // Load posts after logout if necessary
-    } catch (error) {
-        console.error('Error logging out:', error);
-    }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('User logged out:', data);
+    })
+    .catch(error => console.error('Error logging out user:', error));
+}
+
+// Utility function to get auth token (if applicable)
+function getAuthToken() {
+    // Implement token retrieval logic if you're using tokens
+    return '';
 }
